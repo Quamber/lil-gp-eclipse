@@ -9,9 +9,6 @@ C_SRCS += \
 ../src/kernel/ckpoint.c \
 ../src/kernel/crossovr.c \
 ../src/kernel/ephem.c \
-../src/kernel/ev_none.c \
-../src/kernel/ev_time.c \
-../src/kernel/ev_times.c \
 ../src/kernel/eval.c \
 ../src/kernel/event.c \
 ../src/kernel/exch.c \
@@ -38,9 +35,6 @@ OBJS += \
 ./src/kernel/ckpoint.o \
 ./src/kernel/crossovr.o \
 ./src/kernel/ephem.o \
-./src/kernel/ev_none.o \
-./src/kernel/ev_time.o \
-./src/kernel/ev_times.o \
 ./src/kernel/eval.o \
 ./src/kernel/event.o \
 ./src/kernel/exch.o \
@@ -67,9 +61,6 @@ C_DEPS += \
 ./src/kernel/ckpoint.d \
 ./src/kernel/crossovr.d \
 ./src/kernel/ephem.d \
-./src/kernel/ev_none.d \
-./src/kernel/ev_time.d \
-./src/kernel/ev_times.d \
 ./src/kernel/eval.d \
 ./src/kernel/event.d \
 ./src/kernel/exch.d \

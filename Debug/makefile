@@ -24,19 +24,19 @@ endif
 # Add inputs and outputs from these tool invocations to the build variables 
 
 # All Target
-all: lil-gp
+all: lil-gp-eclipse
 
 # Tool invocations
-lil-gp: $(OBJS) $(USER_OBJS)
+lil-gp-eclipse: $(OBJS) $(USER_OBJS)
 	@echo 'Building target: $@'
 	@echo 'Invoking: Cross GCC Linker'
-	gcc  -o "lil-gp" $(OBJS) $(USER_OBJS) $(LIBS)
+	gcc  -o "lil-gp-eclipse" $(OBJS) $(USER_OBJS) $(LIBS)
 	@echo 'Finished building target: $@'
 	@echo ' '
 
 # Other Targets
 clean:
-	-$(RM) $(EXECUTABLES)$(OBJS)$(C_DEPS) lil-gp
+	-$(RM) $(OBJS)$(C_DEPS)$(EXECUTABLES) lil-gp-eclipse
 	-@echo ' '
 
 .PHONY: all clean dependents

@@ -34,7 +34,7 @@
 #ifndef _SYS_TIME_H_
 #define	_SYS_TIME_H_
 
-#include <sys/featuretest.h>
+#include "featuretest.h"
 #include <sys/types.h>
 #ifdef _KERNEL
 #include <sys/callout.h>

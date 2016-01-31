@@ -1,0 +1,35 @@
+###
+### emulate the operation of the "Simple LISP Code", from the
+### appendix of _Genetic Programming_ (Koza).
+###
+
+###
+### if you increase the population size to 1000 or more, change the
+### selection methods to "fitness_overselect".
+###
+
+max_depth = 17
+
+probabilistic_operators = no
+breed_phases = 4
+
+breed[1].rate = 0.7                  # fill 70% of the population...
+breed[1].operator = crossover, \     # ...by functionpoint crossover.
+         select = fitness, \
+         internal = 1.0
+
+breed[2].rate = 0.2                  # fill 20% of the population...
+breed[2].operator = crossover, \     # ...by anypoint crossover.
+         select = fitness, \
+         internal = 0.0, \
+         external = 0.0
+
+breed[3].rate = 0.1                  # fill 10% of the population...
+breed[3].operator = reproduction, \  # ...by reproduction.
+         select = fitness
+
+breed[4].rate = 0.0                # fill 0% of the population...
+breed[4].operator = mutation, \    # ...by mutation.
+         select = fitness, \
+         method = grow, \
+         depth = 0-4

@@ -1,0 +1,32 @@
+###
+### emulate the default parameters given in Chapter 7 of
+### _Genetic Programming_ (Koza).
+###
+### note that in several cases, parameters are explicitly set to their
+### default values.  this is redundant but makes things clearer.
+###
+
+###
+### if you increase the population size to 1000 or more, change the
+### selection methods to "fitness_overselect".
+###
+
+max_generations = 50
+pop_size = 500
+
+init.method = half_and_half        
+init.depth = 2-6
+
+max_depth = 17
+
+breed_phases = 2
+
+breed[1].rate = 0.9                 # 90% of the time...
+breed[1].operator = crossover, \    # do crossover...
+         select = fitness, \        # ...using fitness-proportionate selection.
+         internal = 0.9, \          # choose internal crossover points 90% of
+         external = 0.1,            # the time, external the other 10%.
+
+breed[2].rate = 0.1                 # 10% of the time...
+breed[2].operator = reproduction, \ # do reproduction...
+         select = fitness           # ...using fitness-proportionate selection.

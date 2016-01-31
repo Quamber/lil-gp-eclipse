@@ -25,7 +25,7 @@
  *  
  */
 
-#include <sys/times.h>
+#include "time.h"
 #include <limits.h>
 
 #include "event.h"

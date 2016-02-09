@@ -568,6 +568,8 @@ int generation_information ( int gen, multipop *mpop, int stt_interval,
 
 void evaluate_pop ( population *pop )
 {
+	static int generationNo=0;
+	generationNo++;
      int k;
 
 #ifdef DEBUG
@@ -575,10 +577,10 @@ void evaluate_pop ( population *pop )
      app_eval_fitness ( pop->ind );
      exit(0);
 #endif
-     
-     for ( k = 0; k < pop->size; ++k )
+      for ( k = 0; k < pop->size; ++k )
           if ( pop->ind[k].evald != EVAL_CACHE_VALID )
                app_eval_fitness ( (pop->ind)+k );
+
 }
 
 /* calculate_pop_stats()

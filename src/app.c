@@ -36,6 +36,11 @@ static int fitness_cases = -1;
 static double *app_fitness_cases[2];
 static double value_cutoff;
 
+float *error_array;
+
+void init() {
+	error_array = (float*)malloc(sizeof(float)*populationSIZE*generationSIZE);
+}
 int app_build_function_sets ( void )
 {
      function_set fset;
@@ -65,6 +70,7 @@ int app_build_function_sets ( void )
 
      return function_sets_init ( &fset, 1, &tree_map, &tree_name, 1 );
 }
+/*
 
 void app_eval_fitness ( individual *ind )
 {
@@ -72,9 +78,10 @@ void app_eval_fitness ( individual *ind )
      int i;
      double v, dv;
      double disp;
-
+     int population =0;
+     float error=0.0f;
      set_current_individual ( ind );
-     
+
      ind->r_fitness = 0.0;
      ind->hits = 0;
      
@@ -84,7 +91,7 @@ void app_eval_fitness ( individual *ind )
           v = evaluate_tree ( ind->tr[0].data, 0 );
           dv = app_fitness_cases[1][i];
           disp = fabs ( dv-v );
-          
+          error+=disp;
           if ( disp < value_cutoff )
           {
                ind->r_fitness += disp;
@@ -96,6 +103,55 @@ void app_eval_fitness ( individual *ind )
                ind->r_fitness += value_cutoff;
           }
      }
+     error = error/fitness_cases;
+     error_array[generation][population] = error;
+
+     ind->s_fitness = ind->r_fitness;
+     ind->a_fitness = 1/(1+ind->s_fitness);
+     ind->evald = EVAL_CACHE_VALID;
+}
+*/
+
+void app_eval_fitness ( individual *ind )
+{
+
+     int i;
+     double v, dv;
+     double disp;
+     static int population =0;
+     static int generation_No=0;
+     population++;
+     float error=0.0f;
+     set_current_individual ( ind );
+     if(population>=5000)
+     {
+    	 generation_No++;
+    	 population=0;
+     }
+     ind->r_fitness = 0.0;
+     ind->hits = 0;
+
+     for ( i = 0; i < fitness_cases; ++i )
+     {
+          g.x = app_fitness_cases[0][i];
+          v = evaluate_tree ( ind->tr[0].data, 0 );
+          dv = app_fitness_cases[1][i];
+          disp = fabs ( dv-v );
+          error+=disp;
+          if ( disp < value_cutoff )
+          {
+               ind->r_fitness += disp;
+               if ( disp <= 0.01 )
+                    ++ind->hits;
+          }
+          else
+          {
+               ind->r_fitness += value_cutoff;
+          }
+     }
+     error = error/fitness_cases;
+     error_array[(generation_No*50)+population] = error;
+
      ind->s_fitness = ind->r_fitness;
      ind->a_fitness = 1/(1+ind->s_fitness);
      ind->evald = EVAL_CACHE_VALID;
@@ -123,7 +179,7 @@ int app_end_of_evaluation ( int gen, multipop *mpop, int newbest,
           if ( run_stats[0].best[0]->ind->hits == fitness_cases )
                return 1;
      }
-     
+
      return 0;
 }
 
@@ -146,7 +202,7 @@ int app_initialize ( int startfromcheckpoint )
      int i;
      double x, y;
      char *param;
-
+     init();
      if ( !startfromcheckpoint )
      {
 	  oprintf ( OUT_PRG, 50, "not starting from checkpoint file.\n" );
@@ -197,6 +253,8 @@ int app_initialize ( int startfromcheckpoint )
 
 void app_uninitialize ( void )
 {
+
+	free(error_array);
      FREE ( app_fitness_cases[0] );
      FREE ( app_fitness_cases[1] );
 }

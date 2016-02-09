@@ -29,12 +29,17 @@
 #define _APP_H
 
 #include "kernel/lilgp.h"
+#include "kernel/types.h"
 
+void app_eval_fitness ( individual *ind );
+/*void app_eval_fitness ( individual *ind,int generation_No );*/
 typedef struct
 {
      double x;
 } globaldata;
 
 extern globaldata g;
-
+extern float *error_array ;
+#define populationSIZE 5000
+#define generationSIZE  50
 #endif

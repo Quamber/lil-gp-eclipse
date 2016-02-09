@@ -25,7 +25,7 @@
  *  
  */
 
-#include <lilgp.h>
+#include "lilgp.h"
 
 #ifdef MEMORY_LOG
 extern FILE *mlog;

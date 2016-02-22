@@ -39,7 +39,11 @@ typedef struct
 } globaldata;
 
 extern globaldata g;
-extern float *error_array ;
+extern float **error_array ;
+
+extern float *optimal_in_generation;
+extern int *optimal_index_in_generation;
+extern int same_optimal_count;
 #define populationSIZE 5000
 #define generationSIZE  50
 #endif

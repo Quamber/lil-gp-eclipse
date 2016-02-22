@@ -1,41 +1,28 @@
 === BEST-OF-RUN ===
-              generation: 19
-                   nodes: 101
-                   depth: 15
-                    hits: 200
+              generation: 13
+                   nodes: 47
+                   depth: 13
+                    hits: 62
 TOP INDIVIDUAL:
 
 
 
 -- #1 --
-                    hits: 200
-             raw fitness: 0.0016
-    standardized fitness: 0.0016
-        adjusted fitness: 0.9984
+                    hits: 62
+             raw fitness: 7.0474
+    standardized fitness: 7.0474
+        adjusted fitness: 0.1243
 TREE:
- (- (+ (* X
-          (+ X
-             (* (* X X)
-                (+ X
-                   (cos 0.00774))))) X)
-    (* (+ (exp (+ (+ X
-                     (* (cos X) X)) X))
-          (exp (* -0.21812
-                  (+ (+ (- (* (exp X)
-                              (* X X))
-                           (cos X))
-                        (rlog (/ X X)))
-                     (* (/ X
-                           (/ (rlog (exp X))
-                              (* (sin (cos X)) X)))
-                        (* X X))))))
-       (rlog (rlog (* (- X X)
-                      (+ (- (exp X)
-                            (+ (* (+ (* -0.69544 0.24449)
-                                     (/ (+ (exp (* 0.61922 0.29193))
-                                           (- (exp (sin X))
-                                              (cos -0.27665)))
-                                        (+ 0.49951 0.68461))) X)
-                               (exp X)))
-                         (* (+ X 0.69143)
-                            (* (cos X) X))))))))
+ (* (+ (* 0.33031
+          (* 0.77424
+             (* (+ (- X -0.94430)
+                   (* (* X
+                         (+ (exp (* (sin -0.60299)
+                                    (+ X
+                                       (+ 0.11150 X)))) X))
+                      (+ X
+                         (sin (* 0.57850 X)))))
+                (* (exp X) X))))
+       (/ (+ (exp (* 0.61922 0.29193))
+             (sin X))
+          (+ 0.49951 0.68461))) X)

@@ -53,12 +53,12 @@ int ind_nodelimit;
 int main ( int argc, char **argv )
 {
 
-     multipop *mpop;
-     int startgen;
-     char *param;
-     event start, end, diff;
-     event eval, breed;
-     int startfromcheckpoint;
+	extern   multipop *mpop;
+	extern int startgen;
+	 char *param;
+	extern event start, end, diff;
+	extern event eval, breed;
+	extern int startfromcheckpoint;
 
 #ifdef MEMORY_LOG
      /* dump all memory allocations to a file. */
@@ -120,7 +120,7 @@ int main ( int argc, char **argv )
      run_gp ( mpop, startgen, &eval, &breed, startfromcheckpoint );
 
      /* free app stuff. */
-     app_uninitialize();
+    // app_uninitialize();
 
      /* free lots of stuff. */
      free_breeding ( mpop );

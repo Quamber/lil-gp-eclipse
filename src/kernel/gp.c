@@ -37,7 +37,6 @@ saved_ind *saved_head, *saved_tail;
 
 void run_gp(multipop *mpop, int startgen, event *t_eval, event *t_breed,
 		int startfromcheckpoint) {
-
 	char *param;
 	int gen;
 	int maxgen;
@@ -48,6 +47,7 @@ void run_gp(multipop *mpop, int startgen, event *t_eval, event *t_breed,
 	char *checkfilename = NULL;
 	event start, end, diff;
 	int term = 0;
+	termination_override =0;
 	int stt_interval;
 	int bestn;
 
@@ -129,17 +129,18 @@ void run_gp(multipop *mpop, int startgen, event *t_eval, event *t_breed,
 		oprintf( OUT_SYS, 20, "no checkpointing will be done.\n");
 
 	/* the big loop. */
-	for (gen = startgen; gen <= maxgen && !term; ++gen) {
+	for (gen = startgen; gen < maxgen && !term; ++gen) {
 		oprintf( OUT_SYS, 20, "=== generation %d.\n", gen);
-
+		generation_No = gen;
 		/* unless this is the first generation after loading a checkpoint
 		 file... */
 		if (!(startfromcheckpoint && gen == startgen)) {
 
 			/* evaluate the population. */
 			event_mark(&start);
-			for (i = 0; i < mpop->size; ++i)
+			for (i = 0; i < mpop->size; ++i) { //generation_No = i;
 				evaluate_pop(mpop->pop[i]);
+			}
 			event_mark(&end);
 			event_diff(&diff, &start, &end);
 
@@ -157,8 +158,8 @@ void run_gp(multipop *mpop, int startgen, event *t_eval, event *t_breed,
 			term = generation_information(gen, mpop, stt_interval,
 					run_stats[0].bestn);
 			if (term) {
-				oprintf( OUT_SYS, 30, "user termination criterion met.\n");
-				extern float *optimal_in_generation;
+				//oprintf( OUT_SYS, 30, "user termination criterion met.\n");
+				/*extern float *optimal_in_generation;
 				extern int *optimal_index_in_generation;
 				extern int same_optimal_count;
 				int i;
@@ -170,7 +171,7 @@ void run_gp(multipop *mpop, int startgen, event *t_eval, event *t_breed,
 					printf("Index: %d ERR : %f -Index %d Same : %i\n", i,
 							optimal_in_generation[i],
 							optimal_index_in_generation[i], same_optimal_count);
-				}
+				}*/
 			}
 			flush_output_streams();
 
@@ -561,6 +562,9 @@ int generation_information(int gen, multipop *mpop, int stt_interval, int bestn)
 	saved_individual_gc();
 
 	/* return value the application callback gave us. */
+	if(termination_override==1)
+		{termination_override=0;
+		return 1;}
 	return ret;
 
 }
@@ -580,11 +584,52 @@ void evaluate_pop(population *pop) {
 	exit(0);
 #endif
 
-	for (k = 0; k < pop->size; ++k)
+	for (k = 0; k < pop->size; ++k) {
 		if (pop->ind[k].evald != EVAL_CACHE_VALID) {
-			population_No=k;
+			population_No = k;
 			app_eval_fitness((pop->ind) + k);
 		}
+	}
+	if (generation_No != (generationSIZE - 1)) {
+		optimal_in_generation[generation_No + 1] = 1000;
+	}
+	if (optimal_in_generation[generation_No]
+			>= optimal_in_generation[generation_No - 1]) {
+		same_optimal_count++;
+	} else {
+		same_optimal_count = 1;
+	}
+	if (same_optimal_count > 3) {
+		//current_max_importance++;
+		printf("Printing File");
+		if (create_output_stream( OUT_ERROR, ".fdd", 1, "w", 0) !=
+		OUTPUT_OK) {
+			output_stream_open( OUT_ERROR);
+			int i;
+			double v, dv, disp;
+			float error = 0.0f;
+			for (i = 0; i < fitness_cases; ++i) {
+				g.x = app_fitness_cases[0][i];
+				v =
+						evaluate_tree(
+								((pop->ind)
+										+ optimal_index_in_generation[generation_No])->tr[0].data,
+								0);
+				dv = app_fitness_cases[1][i];
+				disp = fabs(dv - v);
+				error += disp;
+
+			}
+			error = error / fitness_cases;
+			oprintf( OUT_ERROR, 50, "%lf %lf\n", g.x, error);
+
+			output_stream_close( OUT_ERROR);
+			termination_override = 1;
+		}
+	}
+	printf("Index: %d ERR : %f -Index %d Same : %i\n", generation_No,
+			optimal_in_generation[generation_No],
+			optimal_index_in_generation[generation_No], same_optimal_count);
 
 }
 

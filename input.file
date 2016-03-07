@@ -27,5 +27,5 @@ breed[2].rate = 0.1
 
 ## Best individual testing range
 
-fn_start = -3
-fn_end =  4
+fn_start = -1
+fn_end =  1

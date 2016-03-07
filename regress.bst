@@ -1,7 +1,7 @@
 === BEST-OF-RUN ===
-              generation: 0
-                   nodes: 3
-                   depth: 2
+              generation: 2
+                   nodes: 14
+                   depth: 4
                     hits: 0
 TOP INDIVIDUAL:
 
@@ -9,9 +9,11 @@ TOP INDIVIDUAL:
 
 -- #1 --
                     hits: 0
-             raw fitness: 0.0000
-    standardized fitness: 0.0000
-        adjusted fitness: 1.0000
+             raw fitness: 4672.6487
+    standardized fitness: 4672.6487
+        adjusted fitness: 0.0002
 TREE:
- (exp (rlog (+ (rlog (+ 0.51628 -0.30835))
-               (cos (rlog X)))))
+ (+ (+ (/ (+ 0.60623 X)
+          (sin 0.28535))
+       (* X X))
+    (cos (sin X)))

@@ -91,6 +91,7 @@
 #define OUT_BST    4
 #define OUT_HIS    5
 #define OUT_USER   6
+#define OUT_ERROR  7
 
 #define PARAM_COPY_NONE   0
 #define PARAM_COPY_NAME   1

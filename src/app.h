@@ -36,10 +36,18 @@ typedef struct
 {
      double x;
 } globaldata;
+int fitness_cases ;
+int termination_override;
 
+double *app_fitness_cases[3];
+extern float current_top ;
 extern globaldata g;
 extern float **error_array ;
-
+extern multipop *mpop;
+extern int startgen;
+extern event start, end, diff;
+extern event eval, breed;
+extern int startfromcheckpoint;
 extern float *optimal_in_generation;
 extern int *optimal_index_in_generation;
 extern int same_optimal_count;

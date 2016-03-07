@@ -602,9 +602,9 @@ void evaluate_pop(population *pop) {
 	if (same_optimal_count > 3) {
 		//current_max_importance++;
 		printf("Printing File");
-		if (create_output_stream( OUT_ERROR, ".fdd", 1, "w", 0) !=
-		OUTPUT_OK) {
-			output_stream_open( OUT_ERROR);
+		FILE *out_file = fopen("regress.asim", "w");
+		if (out_file) {
+			//output_stream_open( OUT_ERROR);
 			int i;
 			double v, dv, disp;
 			float error = 0.0f;
@@ -621,9 +621,11 @@ void evaluate_pop(population *pop) {
 
 			}
 			error = error / fitness_cases;
-			oprintf( OUT_ERROR, 50, "%lf %lf\n", g.x, error);
-
-			output_stream_close( OUT_ERROR);
+			fprintf( out_file, 50, "%f", (float)g.x);
+			fprintf( out_file, 50, " %f", (float) error);
+			fprintf( out_file, 50, "\n");
+			fclose(out_file);
+		//	output_stream_close( OUT_ERROR);
 			termination_override = 1;
 		}
 	}

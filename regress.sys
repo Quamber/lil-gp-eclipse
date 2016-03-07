@@ -21,45 +21,18 @@ creating initial population(s):
 starting evolution.
 no checkpointing will be done.
 === generation 0.
-    evaluation complete.  (0s wall)
-    breeding complete.    (0s wall)
+    evaluation complete.  (9s wall)
+    breeding complete.    (1s wall)
 === generation 1.
-    evaluation complete.  (1s wall)
-    breeding complete.    (0s wall)
+    evaluation complete.  (4s wall)
+    breeding complete.    (4s wall)
 === generation 2.
-    evaluation complete.  (0s wall)
-    breeding complete.    (0s wall)
+    evaluation complete.  (2s wall)
+    breeding complete.    (8s wall)
 === generation 3.
-    evaluation complete.  (0s wall)
-    breeding complete.    (0s wall)
+    evaluation complete.  (8s wall)
+    breeding complete.    (3s wall)
 === generation 4.
-    evaluation complete.  (1s wall)
-    breeding complete.    (0s wall)
+    evaluation complete.  (5s wall)
+    breeding complete.    (5s wall)
 === generation 5.
-    evaluation complete.  (0s wall)
-
-SYSTEM STATISTICS
-
-------- memory -------
-           allocated:      9535629
-               freed:      9535029
-           not freed:      600
-       max allocated:      2583928
-    malloc'ed blocks:      84537
-   realloc'ed blocks:      9
-      free'ed blocks:      84534
-
-------- time -------
-             overall:      3s wall
-          evaluation:      2s wall
-            breeding:      0s wall
-
-------- generation spaces -------
-      space   0 size:      200
-      space   1 size:      100
-
-------- ephemeral random constants -------
-                used:      13165
-               freed:      13165
-           allocated:      13500
-              blocks:      26

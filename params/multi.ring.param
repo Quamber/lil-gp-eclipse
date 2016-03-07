@@ -1,0 +1,90 @@
+###
+### 
+### ring file
+
+output.basename = 
+
+max_generations = 500
+pop_size = 500
+
+random_seed = 23
+
+# how to generate the initial population
+init.method = half_and_half
+init.depth = 2-7
+
+max_nodes = 750
+max_depth = 17
+
+breed_phases = 4
+
+#############
+# default values 
+breed[1].operator = crossover, \
+		select = fitness_overselect, \
+		internal = 1.0
+breed[1].rate = 0.80  
+
+breed[2].operator = crossover, \
+		select = fitness_overselect, \
+		external = 1.0
+breed[2].rate = 0.1         
+
+
+breed[3].operator = reproduction, \
+		select = fitness_overselect
+breed[3].rate = 0.05               
+
+breed[4].operator = mutation, \
+		select = fitness, \
+		method = grow, \
+		depth = 4
+breed[4].rate = 0.05
+
+
+
+multiple.subpops = 7
+multiple.exch_gen = 10     # exchange every 10 generations
+multiple.exchanges = 7     # number of sets of exchanges done
+
+exch[1].to = 2
+exch[1].toselect = worst
+exch[1].from = 1
+exch[1].fromselect = best
+exch[1].count = 10
+
+exch[2].to = 3
+exch[2].toselect = worst
+exch[2].from = 2
+exch[2].fromselect = best
+exch[2].count = 10
+
+exch[3].to = 4
+exch[3].toselect = worst
+exch[3].from = 3
+exch[3].fromselect = best
+exch[3].count = 10
+
+exch[4].to = 5
+exch[4].toselect = worst
+exch[4].from = 4
+exch[4].fromselect = best
+exch[4].count = 10
+
+exch[5].to = 6
+exch[5].toselect = worst
+exch[5].from = 5
+exch[5].fromselect = best
+exch[5].count = 10
+
+exch[6].to = 7
+exch[6].toselect = worst
+exch[6].from = 6
+exch[6].fromselect = best
+exch[6].count = 10
+
+exch[7].to = 1
+exch[7].toselect = worst
+exch[7].from = 7
+exch[7].fromselect = best
+exch[7].count = 10

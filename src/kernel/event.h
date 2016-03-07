@@ -34,6 +34,8 @@
 typedef struct 
 {
      clock_t wall;
+     clock_t user;
+         clock_t sys;
 } event;
 
 void event_init ( void );

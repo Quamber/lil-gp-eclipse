@@ -27,39 +27,58 @@
 
 #include <stdio.h>
 #include <math.h>
+#include <stdbool.h>
 
 #include "kernel/lilgp.h"
 
 globaldata g;
 
 static int fitness_cases = -1;
-static double *app_fitness_cases[2];
+static double *app_fitness_cases[3];
+static int *app_fitness_importance;
 static double value_cutoff;
 int population_No = 0;
 int generation_No = 0;
+int populationSIZE=5;
+int generationSIZE  =5;
 //int minimum=10000;
 float *optimal_in_generation;
 int *optimal_index_in_generation;
 float **error_array;
-int same_optimal_count=1;
+int same_optimal_count = 1;
+int current_max_importance = 1;
+int best_starting=-1;
+int best_ending=1;
 //static int fittestTreeNo=0;
 //static int change_counter=0;
 
 void init() {
+	populationSIZE = atoi(get_parameter("pop_size"));
+	generationSIZE = atoi (get_parameter("max_generations"));
+	best_starting = atoi(get_parameter("fn_start"));
+	best_ending = atoi(get_parameter("fn_end"));
+	print_parameters();
+	printf("Best %d : %d",best_starting,best_ending);
+
+	if(best_starting<best_ending)
+	{
+		best_starting=-1;
+		best_ending=1;
+	}
+	printf("%d : %d",populationSIZE,generationSIZE);
 	error_array = malloc(generationSIZE * sizeof(float *));
 	optimal_in_generation = malloc(generationSIZE * sizeof(float));
 	optimal_index_in_generation = malloc(generationSIZE * sizeof(int));
-	for(int i=0;i<generationSIZE;i++)
-	{
-		optimal_in_generation[i]=-1;
+	for (int i = 0; i < generationSIZE; i++) {
+		optimal_in_generation[i] = -1;
 	}
 	//memset(optimal_in_generation,-1,generationSIZE*sizeof(float));
-	optimal_in_generation[0] =1000;
+	optimal_in_generation[0] = 1000;
 	//
 	int i;
 	for (i = 0; i < generationSIZE; i++) {
 		error_array[i] = malloc(populationSIZE * sizeof(float));
-		memset(error_array[i], 0.0f, populationSIZE*sizeof(float));
+		memset(error_array[i], 0.0f, populationSIZE * sizeof(float));
 
 	}
 }
@@ -69,14 +88,14 @@ int app_build_function_sets(void) {
 	char *tree_name;
 	function sets[10] = { { f_multiply, NULL, NULL, 2, "*", FUNC_DATA, -1, 0 },
 			{ f_protdivide, NULL, NULL, 2, "/", FUNC_DATA, -1, 0 }, { f_add,
-					NULL, NULL, 2, "+", FUNC_DATA, -1, 0 }, { f_subtract, NULL,
-					NULL, 2, "-", FUNC_DATA, -1, 0 }, { f_sin, NULL, NULL, 1,
-					"sin", FUNC_DATA, -1, 0 }, { f_cos, NULL, NULL, 1, "cos",
-					FUNC_DATA, -1, 0 }, { f_exp, NULL, NULL, 1, "exp",
-					FUNC_DATA, -1, 0 }, { f_rlog, NULL, NULL, 1, "rlog",
-					FUNC_DATA, -1, 0 }, { f_indepvar, NULL, NULL, 0, "X",
-					TERM_NORM, -1, 0 }, { NULL, f_erc_gen, f_erc_print, 0, "R",
-					TERM_ERC, -1, 0 } };
+			NULL, NULL, 2, "+", FUNC_DATA, -1, 0 }, { f_subtract, NULL,
+			NULL, 2, "-", FUNC_DATA, -1, 0 }, { f_sin, NULL, NULL, 1, "sin",
+					FUNC_DATA, -1, 0 }, { f_cos, NULL, NULL, 1, "cos",
+			FUNC_DATA, -1, 0 }, { f_exp, NULL, NULL, 1, "exp",
+			FUNC_DATA, -1, 0 }, { f_rlog, NULL, NULL, 1, "rlog",
+			FUNC_DATA, -1, 0 }, { f_indepvar, NULL, NULL, 0, "X",
+			TERM_NORM, -1, 0 }, { NULL, f_erc_gen, f_erc_print, 0, "R",
+			TERM_ERC, -1, 0 } };
 
 	binary_parameter("app.use_ercs", 1);
 	if (atoi(get_parameter("app.use_ercs")))
@@ -90,47 +109,8 @@ int app_build_function_sets(void) {
 
 	return function_sets_init(&fset, 1, &tree_map, &tree_name, 1);
 }
-/*
 
- void app_eval_fitness ( individual *ind )
- {
 
- int i;
- double v, dv;
- double disp;
- int population =0;
- float error=0.0f;
- set_current_individual ( ind );
-
- ind->r_fitness = 0.0;
- ind->hits = 0;
-
- for ( i = 0; i < fitness_cases; ++i )
- {
- g.x = app_fitness_cases[0][i];
- v = evaluate_tree ( ind->tr[0].data, 0 );
- dv = app_fitness_cases[1][i];
- disp = fabs ( dv-v );
- error+=disp;
- if ( disp < value_cutoff )
- {
- ind->r_fitness += disp;
- if ( disp <= 0.01 )
- ++ind->hits;
- }
- else
- {
- ind->r_fitness += value_cutoff;
- }
- }
- error = error/fitness_cases;
- error_array[generation][population] = error;
-
- ind->s_fitness = ind->r_fitness;
- ind->a_fitness = 1/(1+ind->s_fitness);
- ind->evald = EVAL_CACHE_VALID;
- }
- */
 
 void app_eval_fitness(individual *ind) {
 
@@ -143,68 +123,70 @@ void app_eval_fitness(individual *ind) {
 	ind->hits = 0;
 
 	for (i = 0; i < fitness_cases; ++i) {
-		g.x = app_fitness_cases[0][i];
-		v = evaluate_tree(ind->tr[0].data, 0);
-		dv = app_fitness_cases[1][i];
-		disp = fabs(dv - v);
-		error += disp;
-		if (disp < value_cutoff) {
-			ind->r_fitness += disp;
-			if (disp <= 0.01)
-				++ind->hits;
-		} else {
-			ind->r_fitness += value_cutoff;
+		if (app_fitness_importance[i] <= current_max_importance&&app_fitness_importance[i] !=0) {
+			g.x = app_fitness_cases[0][i];
+			v = evaluate_tree(ind->tr[0].data, 0);
+			dv = app_fitness_cases[1][i];
+			disp = fabs(dv - v);
+			error += disp;
+			if (disp < value_cutoff) {
+				ind->r_fitness += disp;
+				if (disp <= 0.01)
+					++ind->hits;
+			} else {
+				ind->r_fitness += value_cutoff;
+			}
 		}
 	}
 	error = error / fitness_cases;
 	//  error_array[(generation_No*50)+population] = error;
 	error_array[generation_No][population_No] = error;
-/*
-	if(population_No >4970)
-	{
-	//	printf ("Debug this");
-	}
-	//system("cls");
-	if ( generation_No == 18) {
-		int k = 0, l = 0;
-		for (k = 0; k < generationSIZE; k++) {
-			printf("\n No %d\n\n", k);
-			for (l = 0; l < populationSIZE; l++) {
-				printf(" %f ", error_array[k][l]);
-			}
-		}
-		exit(0);
-	}
-*/
-if(optimal_in_generation[generation_No]>error)
-{optimal_in_generation[generation_No]=error;
-optimal_index_in_generation[generation_No]=population_No;
+	/*
+	 if(population_No >4970)
+	 {
+	 //	printf ("Debug this");
+	 }
+	 //system("cls");
+	 if ( generation_No == 18) {
+	 int k = 0, l = 0;
+	 for (k = 0; k < generationSIZE; k++) {
+	 printf("\n No %d\n\n", k);
+	 for (l = 0; l < populationSIZE; l++) {
+	 printf(" %f ", error_array[k][l]);
+	 }
+	 }
+	 exit(0);
+	 }
+	 */
+	if (optimal_in_generation[generation_No] > error) {
+		optimal_in_generation[generation_No] = error;
+		optimal_index_in_generation[generation_No] = population_No;
 	}
 	ind->s_fitness = ind->r_fitness;
 	ind->a_fitness = 1 / (1 + ind->s_fitness);
 	ind->evald = EVAL_CACHE_VALID;
 	population_No++;
-		if (population_No >= populationSIZE) {
-			if(generation_No>=17)
-			{
-				printf("Here i am");
-			}
-			generation_No++;
-			population_No = 0;
-			optimal_in_generation[generation_No]=1000;
-			if(optimal_in_generation[generation_No-1]==optimal_in_generation[generation_No-2]&&(optimal_index_in_generation[generation_No-1]==optimal_index_in_generation[generation_No-2]))
-			{
-				same_optimal_count++;
-			}
-			else
-			{
-				same_optimal_count=1;
-			}
-			printf("Index: %d ERR : %f -Index %d Same : %i\n", generation_No-1,
-										optimal_in_generation[generation_No-1],
-										optimal_index_in_generation[generation_No-1], same_optimal_count);
-
+	if (population_No >= populationSIZE) {
+		generation_No++;
+		population_No = 0;
+		optimal_in_generation[generation_No] = 1000;
+		if (optimal_in_generation[generation_No - 1]
+				>= optimal_in_generation[generation_No - 2]
+				) {
+			same_optimal_count++;
+		} else {
+			same_optimal_count = 1;
 		}
+		if(same_optimal_count>3)
+		{
+			current_max_importance++;
+		}
+		printf("Index: %d ERR : %f -Index %d Same : %i\n", generation_No - 1,
+				optimal_in_generation[generation_No - 1],
+				optimal_index_in_generation[generation_No - 1],
+				same_optimal_count);
+
+	}
 }
 
 int app_end_of_evaluation(int gen, multipop *mpop, int newbest,
@@ -215,7 +197,7 @@ int app_end_of_evaluation(int gen, multipop *mpop, int newbest,
 	if (newbest) {
 		output_stream_open( OUT_USER);
 
-		for (i = -100; i <= 100; ++i) {
+		for (i = (best_starting*100); i <= (100*best_ending); ++i) {
 			g.x = (double) i * .01;
 			v = evaluate_tree(run_stats[0].best[0]->ind->tr[0].data, 0);
 			oprintf( OUT_USER, 50, "%lf %lf\n", g.x, v);
@@ -241,6 +223,26 @@ int app_create_output_streams(void) {
 
 	return 0;
 }
+bool in_between(double start, double end, double value) {
+	if (value > start && value < end) {
+		return true;
+	}
+	return false;
+}
+int checkImportance(double x) {
+
+	if (in_between(-3, -2.75, x) || in_between(-2.59, -2.2, x)
+			|| in_between(-1.39, -0.4, x) || in_between(1.8, 3.0, x)
+			|| in_between(3.81, 4.0, x)) {
+		return 1;
+	} else if (in_between(-2.74, -2.6, x) || in_between(-2.1, -2, x)
+			|| in_between(-0.09, 1.7, x) || in_between(3.1, 3.8, x)) {
+		return 2;
+	} else if (in_between(-1.9, -1.4, x) || in_between(-0.3, -0.1, x)) {
+		return 3;
+	}
+	return 0;
+}
 
 int app_initialize(int startfromcheckpoint) {
 	int i;
@@ -259,24 +261,33 @@ int app_initialize(int startfromcheckpoint) {
 				error( E_FATAL_ERROR,
 						"invalid value for \"app.fitness_cases\".");
 		}
-
+		//scanf("%d", &fitness_cases);
 		app_fitness_cases[0] = (double *) MALLOC(
 				fitness_cases * sizeof(double));
 		app_fitness_cases[1] = (double *) MALLOC(
 				fitness_cases * sizeof(double));
-
-		oprintf( OUT_PRG, 50, "%d fitness cases:\n", fitness_cases);
+		app_fitness_importance = (int *) MALLOC(fitness_cases * sizeof(int));
+		//Asim Code
+		/*float x, y;
 		for (i = 0; i < fitness_cases; ++i) {
-			x = (random_double() * 2.0) - 1.0;
-
-			/* change this line to modify the goal function. */
-			y = x * x * x * x + x * x * x + x * x + x;
-
+			scanf("%f", &x);
+			scanf("%f", &y);
 			app_fitness_cases[0][i] = x;
 			app_fitness_cases[1][i] = y;
+			app_fitness_importance[i] = checkImportance(x);
+		}*/
+		oprintf( OUT_PRG, 50, "%d fitness cases:\n", fitness_cases);
+		for (i = 0; i < fitness_cases; ++i) {
+		 x = (random_double() * 2.0) - 1.0;
 
-			oprintf( OUT_PRG, 50, "    x = %12.5lf, y = %12.5lf\n", x, y);
-		}
+		// change this line to modify the goal function.
+		 y = x * x * x * x + x * x * x + x * x + x;
+
+		 app_fitness_cases[0][i] = x;
+		 app_fitness_cases[1][i] = y;
+
+		// oprintf( OUT_PRG, 50, "    x = %12.5lf, y = %12.5lf\n", x, y);
+		 }
 	} else {
 		oprintf( OUT_PRG, 50, "started from checkpoint file.\n");
 	}
@@ -292,7 +303,8 @@ int app_initialize(int startfromcheckpoint) {
 
 void app_uninitialize(void) {
 
-	free(error_array);
+	FREE(error_array);
+	FREE(app_fitness_importance);
 	FREE(app_fitness_cases[0]);
 	FREE(app_fitness_cases[1]);
 }

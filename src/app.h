@@ -30,8 +30,7 @@
 
 #include "kernel/lilgp.h"
 #include "kernel/types.h"
-
-void app_eval_fitness ( individual *ind );
+void app_eval_fitness(individual *ind);
 /*void app_eval_fitness ( individual *ind,int generation_No );*/
 typedef struct
 {
@@ -44,6 +43,11 @@ extern float **error_array ;
 extern float *optimal_in_generation;
 extern int *optimal_index_in_generation;
 extern int same_optimal_count;
-#define populationSIZE 5000
-#define generationSIZE  50
+extern int populationSIZE;
+extern int generationSIZE;
+extern int best_starting;
+extern int best_ending;
+extern int population_No ;
+extern int generation_No ;
+
 #endif

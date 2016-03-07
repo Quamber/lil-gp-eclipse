@@ -25,3 +25,7 @@ breed[1].rate = 0.9
 breed[2].operator = reproduction, select=fitness
 breed[2].rate = 0.1
 
+## Best individual testing range
+
+fn_start = -3
+fn_end =  4
